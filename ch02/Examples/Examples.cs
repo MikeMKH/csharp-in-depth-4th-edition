@@ -27,6 +27,7 @@ namespace Examples
         }
     }
     
+    // 2.1.7
     class GenericCounter<T>
     {
         private static int value;

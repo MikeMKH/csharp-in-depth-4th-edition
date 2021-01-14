@@ -61,6 +61,29 @@ namespace Examples
             // Assert.IsType<int?>(maybeFive ?? none); // Actual:   System.Int32
             Assert.IsType<int>(none ?? maybeFive);
         }
+        
+        delegate int Value(string value);
+        int Five(object value) => 5;
+        int Six(string value) => 6;
+        Int32 Seven(String value) => 7;
+        Int16 NotSameByIdentityConversion8(string value) => 8;
+        Int64 NotSameByIdentityConversion9(string value) => 9;
+        
+        [Fact]
+        public void DelegateCompatibilityExamples()
+        {
+            var f5 = new Value(Five);
+            var f6 = new Value(Six);
+            var f7 = new Value(Seven);
+            // var f8 = new Value(NotSameByIdentityConversion8); // 'short has the wrong return type
+            // var f9 = new Value(NotSameByIdentityConversion9); // 'long  has the wrong return type
+            
+            Assert.Equal(f5("must be a string"), 5);
+            Assert.Equal(Five(new {}), 5);
+            
+            Assert.Equal(f6("a string"), 6);
+            Assert.Equal(f7("a String"), 7);
+        }
     }
     
     // 2.1.7

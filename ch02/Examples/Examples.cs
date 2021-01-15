@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace Examples
@@ -83,6 +85,64 @@ namespace Examples
             
             Assert.Equal(f6("a string"), 6);
             Assert.Equal(f7("a String"), 7);
+        }
+        
+        int finallyCounter = 0;
+        IEnumerable<int> SimpleIterator()
+        {
+            try
+            {
+                yield return 10;
+                for(int i = 2; i < 5; i++)
+                {
+                    yield return 10 * i;
+                }
+                yield return 50;
+            }
+            finally
+            {
+                finallyCounter++;
+            }
+        } 
+        
+        [Fact]
+        public void IteratorExample()
+        {
+            int counter = 1;
+            foreach(var value in SimpleIterator())
+            {
+                Assert.Equal(counter * 10, value);
+                counter++;
+            }
+            Assert.Equal(1, finallyCounter);
+        }
+        
+        // 2.4.4
+        IEnumerable<int> Fibonacci()
+        {
+            int current = 1;
+            int next = 1;
+            while(true)
+            {
+                yield return current;
+                
+                int t = current;
+                current = next;
+                next = next + t;
+            }
+        }
+        
+        [Fact]
+        public void FibonacciExample()
+        {
+            Assert.Equal(1, Fibonacci().ElementAt(0));
+            Assert.Equal(1, Fibonacci().ElementAt(1));
+            Assert.Equal(2, Fibonacci().ElementAt(2));
+            Assert.Equal(3, Fibonacci().ElementAt(3));
+            Assert.Equal(5, Fibonacci().ElementAt(4));
+            
+            Assert.Equal(89, Fibonacci().ElementAt(10));
+            Assert.Equal(46368, Fibonacci().ElementAt(23));
         }
     }
     

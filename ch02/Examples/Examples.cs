@@ -144,6 +144,26 @@ namespace Examples
             Assert.Equal(89, Fibonacci().ElementAt(10));
             Assert.Equal(46368, Fibonacci().ElementAt(23));
         }
+        
+        [Theory]
+        [InlineData(0, 0, 0)]
+        [InlineData(1, 0, 1)]
+        [InlineData(0, 1, 1)]
+        [InlineData(1, 1, 2)]
+        [InlineData(5, 4, 9)]
+        [InlineData(5, 9, 14)]
+        public void PartialExampleTests(int x1, int x2, int expected)
+          => Assert.Equal(expected, PartialExample.Adder(x1, x2));
+        
+        [Theory]
+        [InlineData(0, 0, 0)]
+        [InlineData(1, 0, 1)]
+        [InlineData(0, 1, -1)]
+        [InlineData(1, 1, 0)]
+        [InlineData(5, 4, 1)]
+        [InlineData(5, 9, -4)]
+        public void MorePartialExampleTests(int x1, int x2, int expected)
+          => Assert.Equal(expected, (new PartialExample()).Subtractor(x1, x2));
     }
     
     // 2.1.7
@@ -158,5 +178,30 @@ namespace Examples
         
         public static int Decrement() => --value;
         
+    }
+    
+    partial class PartialExample
+    {
+        public static int Adder(int a, int b)
+          => ActualAdder(a, b);
+        
+        public int Subtractor(int a, int b)
+        {
+            int result = 0;
+            FastSubtractor(ref result, a, b);
+            return result;
+        }
+        
+        partial void FastSubtractor(ref int result, int x, int y);
+        partial void SlowSubtractor(ref int result, int x, int y);
+    }
+    
+    partial class PartialExample
+    {
+        private static int ActualAdder(int x, int y)
+          => y == 0 ? x : ActualAdder(x + 1, y - 1); // not a great idea since C# does not have tail optimization
+        
+        partial void FastSubtractor(ref int result, int x, int y)
+          => result = x - y;
     }
 }

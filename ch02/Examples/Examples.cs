@@ -152,6 +152,8 @@ namespace Examples
         [InlineData(1, 1, 2)]
         [InlineData(5, 4, 9)]
         [InlineData(5, 9, 14)]
+        [InlineData(5, 9900, 9905)]
+        // [InlineData(5, 99900, 99905)] // Test host process crashed : Stack overflow.
         public void PartialExampleTests(int x1, int x2, int expected)
           => Assert.Equal(expected, PartialExample.Adder(x1, x2));
         
@@ -199,7 +201,7 @@ namespace Examples
     partial class PartialExample
     {
         private static int ActualAdder(int x, int y)
-          => y == 0 ? x : ActualAdder(x + 1, y - 1); // not a great idea since C# does not have tail optimization
+          => y == 0 ? x : ActualAdder(x + 1, y - 1); // not a great idea since C# does not have tail call optimization
         
         partial void FastSubtractor(ref int result, int x, int y)
           => result = x - y;

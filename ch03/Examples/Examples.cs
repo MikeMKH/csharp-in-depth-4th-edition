@@ -75,6 +75,64 @@ namespace Examples
             var foo1 = new Foo { 1 };
             var foo2 = new Foo { { 2 }, { 3 } };
         }
+        
+        [Fact]
+        public void AnonymousTypesExamples()
+        {
+            var player1 = new
+            {
+                Name = "Mike",
+                Score = 8_000_000
+            };
+            
+            Assert.Equal("Mike", player1.Name);
+            Assert.Equal(8_000_000, player1.Score);
+            
+            var player2 = new
+            {
+                Name = "Kelsey",
+                Score = 9_000_000
+            };
+            
+            Assert.Equal(
+                player1.GetType(), player2.GetType());
+            
+            player1 = new
+            {
+                Name = "Jack",
+                Score = 200
+            };
+            
+            Assert.Equal("Jack", player1.Name);
+            Assert.Equal(200, player1.Score);
+            
+            var x = new
+            {
+                player1.Name,
+                player2.Score,
+                Age = 40,
+                Ba = new Ba
+                {
+                    Prop = 8
+                }
+            };
+            
+            Assert.Equal(player1.Name, x.Name);
+            Assert.Equal(player2.Score, x.Score);
+            Assert.Equal(40, x.Age);
+            Assert.Equal(8, x.Ba.Prop);
+            
+            var players = new []
+            {
+                new { Name = "Mac", Score = 7 },
+                new { Name = "Pete", Score = 2 },
+                new { Name = "Mark", Score = 9 }
+            };
+            
+            Assert.Equal(
+                player1.GetType(), players[0].GetType());
+            Assert.Equal("Pete", players[1].Name);
+        }
     }
     
     public class A

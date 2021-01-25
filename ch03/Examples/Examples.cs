@@ -133,6 +133,66 @@ namespace Examples
                 player1.GetType(), players[0].GetType());
             Assert.Equal("Pete", players[1].Name);
         }
+        
+        [Fact]
+        public void LambdaCaptureVariablesExample()
+        {
+            string instanceField = "instanceField";
+            
+            IDictionary<string, string> CreateAction(string methodParameter)
+            {
+                var results = new Dictionary<string, string>();
+                string methodLocal = "methodLocal";
+                string uncaptureLocal = "uncaptureLocal";
+                string changedMethodLocal = "unchangedMethodLocal";
+                
+                Action<string> action = lambdaParameter =>
+                {
+                    string lambdaLocal = "lambdaLocal";
+                    string changedLambdaLocal = "unchangedLambdaLocal";
+                    
+                    results.Add("methodParameter", methodParameter);
+                    results.Add("methodLocal", methodLocal);
+                    results.Add("uncaptureLocal", uncaptureLocal);
+                    results.Add("lambdaParameter", lambdaParameter);
+                    results.Add("lambdaLocal", lambdaLocal);
+                    results.Add("instanceField", instanceField);
+                    
+                    changedMethodLocal = "changedMethodLocal";
+                    results.Add("changedMethodLocal", changedMethodLocal);
+                    
+                    changedLambdaLocal = "changedLambdaLocal";
+                    results.Add("changedLambdaLocal", changedLambdaLocal);
+                };
+                
+                action("lambdaParameter");
+                return results;
+            }
+            
+            var r1 = CreateAction("methodParameter");
+            Assert.Equal("methodParameter", r1["methodParameter"]);
+            Assert.Equal("methodLocal", r1["methodLocal"]);
+            Assert.Equal("uncaptureLocal", r1["uncaptureLocal"]);
+            Assert.Equal("lambdaParameter", r1["lambdaParameter"]);
+            Assert.Equal("lambdaLocal", r1["lambdaLocal"]);
+            Assert.Equal("instanceField", r1["instanceField"]);
+            Assert.Equal("changedMethodLocal", r1["changedMethodLocal"]);
+            Assert.Equal("changedLambdaLocal", r1["changedLambdaLocal"]);
+            
+            instanceField = "changed";
+            var r2 = CreateAction("changed");
+            Assert.Equal("changed", r2["instanceField"]);
+            Assert.Equal("instanceField", r1["instanceField"]);
+            
+            Assert.Equal("methodParameter", r1["methodParameter"]);
+            Assert.Equal("methodLocal", r1["methodLocal"]);
+            Assert.Equal("uncaptureLocal", r1["uncaptureLocal"]);
+            Assert.Equal("lambdaParameter", r1["lambdaParameter"]);
+            Assert.Equal("lambdaLocal", r1["lambdaLocal"]);
+            Assert.Equal("instanceField", r1["instanceField"]);
+            Assert.Equal("changedMethodLocal", r1["changedMethodLocal"]);
+            Assert.Equal("changedLambdaLocal", r1["changedLambdaLocal"]);
+        }
     }
     
     public class A

@@ -193,6 +193,45 @@ namespace Examples
             Assert.Equal("changedMethodLocal", r1["changedMethodLocal"]);
             Assert.Equal("changedLambdaLocal", r1["changedLambdaLocal"]);
         }
+        
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(-2)]
+        [InlineData(0)]
+        [InlineData(200)]
+        [InlineData(-99999)]
+        public void ExtensionsTests(int a)
+        {
+            Assert.Equal(a + 3, a.Add(3));
+            Assert.Equal(a - 3, a.Add(-3));
+            Assert.Equal(a * 2, a.Add(a));
+        }
+        
+        [Fact]
+        public void ExtensionsWorkOnNullInstances()
+        {
+            Assert.Equal("!", ((string) null).SomethingThatTakesNullStrings('!'));
+            
+            string s = null;
+            Assert.Equal("!", s.SomethingThatTakesNullStrings('!'));
+            
+            s = "Works with null";
+            Assert.Equal("Works with null.", s.SomethingThatTakesNullStrings('.'));
+            
+            Assert.Equal("catz", "cat".SomethingThatTakesNullStrings('z'));
+        }
+        
+        [Fact]
+        public void ExtensionChainingExample()
+        {
+            var x = 
+              9.Add(18).Add(27).Add(36).Add(45).Add(54).Add(63).Add(72).Add(81)
+                .ToString()
+                .SomethingThatTakesNullStrings('?');
+            
+            Assert.Equal("405?", x);
+        }
     }
     
     public class A
@@ -220,5 +259,12 @@ namespace Examples
         public Foo GetEnumerator() => throw new NotImplementedException();
         
         public void Add(int x) => Console.WriteLine($"x={x}");
+    }
+    
+    public static class ExampleExtensions
+    {
+        public static int Add(this int a, int b) => a + b;
+        public static string SomethingThatTakesNullStrings(this string s, char c)
+          => string.IsNullOrEmpty(s) ? new string(new [] { c }) : string.Concat(s, c);
     }
 }

@@ -232,6 +232,43 @@ namespace Examples
             
             Assert.Equal("405?", x);
         }
+        
+        [Fact]
+        public void QueryExpressionsAreSameAsMethodExpressions()
+        {
+            var words = new [] { "fee", "fi", "fo", "fum" };
+            
+            var x1 = words
+              .Where(word => word.Length > 2)
+              .OrderBy(word => word)
+              .Select(word => word.ToUpper());
+            
+            var x2 = from word in words
+              where word.Length > 2
+              orderby word
+              select word.ToUpper();
+            
+            Assert.Equal(x1, x2);
+        }
+        
+        [Fact]
+        public void TransparentIdentifierExample()
+        {
+            var words = new [] { "and", "the", "snakes", "start", "to", "sing" };
+            
+            var x1 = from word in words
+              let length = word.Length
+              where length > 2
+              orderby length
+              select $"{length}: {word.ToUpper()}";
+            
+            var x2 = words.Select(word => new { word, length = word.Length })
+              .Where(w => w.length > 2)
+              .OrderBy(w => w.length)
+              .Select(w => $"{w.length}: {w.word.ToUpper()}");
+            
+            Assert.Equal(x1, x2);
+        }
     }
     
     public class A

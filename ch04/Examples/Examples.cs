@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.CSharp.RuntimeBinder;
 using Xunit;
 
@@ -76,6 +77,26 @@ namespace Examples
             Assert.Equal("x=1 xs=2, 3, 4", AnotherExample(x:1, 2, 3, 4));
             // error CS1744: Named argument 'x' specifies a parameter for which a positional argument has already been given
             // Assert.Equal("will not compile", AnotherExample(2, 3, 4, x:1));
+        }
+        
+        [Fact]
+        public void IEnumerableIsCovariant()
+        {
+            IEnumerable<string> strings = new List<string> { "hi", "there" };
+            IEnumerable<object> objects = strings;            
+            Assert.Equal(strings, objects);
+        }
+        
+        [Fact]
+        public void IListIsNotCovariant()
+        {
+            IList<string> strings = new List<string> { "no" };
+            // error CS0266: Cannot implicitly convert type 'System.Collections.Generic.IList<string>' to 'System.Collections.Generic.IList<object>'.
+            // IList<object> objects = strings;
+            // error CS1503: Argument 1: cannot convert from 'object' to 'string'
+            // strings.Add(new object());
+            object obj = strings[0];
+            Assert.Equal(obj, strings[0]);
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CSharp.RuntimeBinder;
 using Xunit;
 
@@ -97,6 +98,41 @@ namespace Examples
             // strings.Add(new object());
             object obj = strings[0];
             Assert.Equal(obj, strings[0]);
+        }
+        
+        [Fact]
+        public void ContravarianceActionExample()
+        {
+            Action<object> objectAction = obj => Console.WriteLine(obj);
+            Action<string> stringAction = objectAction;
+            Action<dynamic> dynamicAction = objectAction;
+            
+            objectAction("object");
+            stringAction("string");
+            dynamicAction("dynamic");
+            
+            Assert.Equal(objectAction, stringAction);
+            Assert.Equal(objectAction, dynamicAction);
+            Assert.Equal(stringAction, dynamicAction);
+        }
+        
+        [Fact]
+        public void LinqCovariantExample()
+        {
+            IEnumerable<string> strings = new [] { "hello", "world" };
+            
+            List<object> xs = strings
+              .Where(word => word.Length > 1)
+              .Cast<object>()
+              .ToList();
+            
+            List<object> ys = strings
+              .Where(word => word.Length > 1)
+              .ToList<object>();
+            
+            Assert.Equal(strings, xs);
+            Assert.Equal(strings, ys);
+            Assert.Equal(xs, ys);
         }
     }
 }

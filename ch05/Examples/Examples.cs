@@ -39,5 +39,21 @@ namespace Examples
                 return (await result).Length;
             }
         }
+        
+        [Fact]
+        public void AsyncIsNotPartOfMethodSignatureExample()
+        {
+            PrintLengthOfPage("https://httpstat.us/200?sleep=301");
+            PrintLengthOfPage("https://httpstat.us/200?sleep=102");
+            PrintLengthOfPage("https://httpstat.us/200?sleep=3");
+            PrintLengthOfPage("http://www.google.com");
+            
+            async void PrintLengthOfPage(string url)
+            {
+                var client = new HttpClient();
+                var length = (await client.GetStringAsync(url)).Length;
+                Console.WriteLine($"{url} has length {length}");
+            }
+        }
     }
 }

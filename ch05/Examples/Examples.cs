@@ -55,5 +55,21 @@ namespace Examples
                 Console.WriteLine($"{url} has length {length}");
             }
         }
+        
+        [Fact]
+        public async void WrappingOfReturnValuesExample()
+        {
+            var client = new HttpClient();
+            
+            Task<int> length = GetPageLengthAsync("https://dotnet.microsoft.com/");
+            Assert.True(length.Result > 0);
+            
+            async Task<int> GetPageLengthAsync(string url)
+            {
+                Task<string> result = client.GetStringAsync(url);
+                int length = (await result).Length;
+                return length;
+            }
+        }
     }
 }

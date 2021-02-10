@@ -1,6 +1,7 @@
 using System;
 using System.Net; // WebClient
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -54,6 +55,11 @@ namespace Examples
                 var length = (await client.GetStringAsync(url)).Length;
                 Console.WriteLine($"{url} has length {length}");
             }
+            /*
+            https://httpstat.us/200?sleep=3 has length 0
+            https://httpstat.us/200?sleep=102 has length 0
+            https://httpstat.us/200?sleep=301 has length 0
+            */
         }
         
         [Fact]
@@ -71,5 +77,35 @@ namespace Examples
                 return length;
             }
         }
+        
+        [Fact]
+        public void AwaitingCompleteAndUncompletedTasksExample()
+        {
+            Task t = ExampleAsync();
+            Console.WriteLine(
+                $"{Thread.CurrentThread.ManagedThreadId}: (1) Method return");
+            t.Wait();
+            Console.WriteLine(
+                $"{Thread.CurrentThread.ManagedThreadId}: (2) Task complete");
+            
+            async Task ExampleAsync()
+            {
+                Console.WriteLine(
+                    $"{Thread.CurrentThread.ManagedThreadId}: (3) Before first await");
+                await Task.FromResult(8);
+                Console.WriteLine(
+                    $"{Thread.CurrentThread.ManagedThreadId}: (4) Between awaits");
+                await Task.Delay(100);
+                Console.WriteLine(
+                    $"{Thread.CurrentThread.ManagedThreadId}: (5) After awaits");
+            }
+            /*
+            18: (3) Before first await
+            18: (4) Between awaits
+            18: (1) Method return
+            19: (5) After awaits
+            18: (2) Task complete
+            */
+        } 
     }
 }

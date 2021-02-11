@@ -106,6 +106,33 @@ namespace Examples
             19: (5) After awaits
             18: (2) Task complete
             */
-        } 
+        }
+        
+        [Fact]
+        public void AwaitedCodeThrowsAggregateException()
+        {
+            Assert.ThrowsAsync<AggregateException>(async () => await Fails());
+            
+            async Task Fails() => throw new ArgumentException("you cannot win");
+        }
+        
+        [Fact]
+        public void CanThrowExceptionBeforeAsync()
+        {
+            Assert.ThrowsAsync<ArgumentException>(async () => await Fails());
+            
+            Task<int> Fails()
+            {
+                throw new ArgumentException("does not wrap in AggregateException");
+                
+                return DoStuff();
+                
+                async Task<int> DoStuff()
+                {
+                    await Task.Delay(10);
+                    return 8;
+                }
+            }
+        }
     }
 }

@@ -134,5 +134,38 @@ namespace Examples
                 }
             }
         }
+        
+        [Fact]
+        public void AsyncLambdaStartAsSoonAsCalled()
+        {
+            Func<int, Task<int>> f = async x =>
+            {
+                Console.WriteLine(
+                    $"{Thread.CurrentThread.ManagedThreadId}: (a) Starting {x}");
+                await Task.Delay(x * 100);
+                Console.WriteLine(
+                    $"{Thread.CurrentThread.ManagedThreadId}: (b) Finished {x}");
+                return x;
+            };
+            
+            Console.WriteLine(
+                    $"{Thread.CurrentThread.ManagedThreadId}: (1) Begin......");
+            Task<int> first = f(10);
+            Task<int> second = f(2);
+            Console.WriteLine(
+                    $"{Thread.CurrentThread.ManagedThreadId}: (2) End........");
+            
+            Assert.Equal(10, first.Result);
+            Assert.Equal(2, second.Result);
+            
+            /*
+            16: (1) Begin......
+            16: (a) Starting 10
+            16: (a) Starting 2
+            16: (2) End........
+            17: (b) Finished 2
+            14: (b) Finished 10
+            */
+        }
     }
 }

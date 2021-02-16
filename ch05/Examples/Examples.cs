@@ -167,5 +167,40 @@ namespace Examples
             14: (b) Finished 10
             */
         }
+        
+        [Fact]
+        public void ValueTaskExample()
+        {
+            var value = 42;
+            var awaiter = Foo().GetAwaiter();
+            if (!awaiter.IsCompleted) Assert.True(false, "was not complete");
+            
+            var result = awaiter.GetResult();
+            Assert.Equal(value, result);
+            
+            ValueTask<int> Foo() => new ValueTask<int>(value);
+        }
+        
+        [Fact]
+        public void ValueTaskUsingDifferentPathExample()
+        {
+            var even = Foo(10);
+            Assert.Equal(false, even.IsCompleted);
+            var odd = Foo(11);
+            Assert.Equal(true, odd.IsCompleted);
+            
+            // https://github.com/dotnet/runtime/issues/15809#issuecomment-160658188
+            async ValueTask<int> Foo(int x)
+            {
+                Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId}: starting x={x}");
+                if (x % 2 == 0)
+                {
+                    Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId}: processing x={x}");
+                    await Task.Delay(x * 10);
+                }
+                Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId}: returning x={x}");
+                return x;
+            }
+        }
     }
 }

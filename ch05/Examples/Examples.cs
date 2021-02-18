@@ -202,5 +202,72 @@ namespace Examples
                 return x;
             }
         }
+        
+        [Fact]
+        public async void ConfigureAwaitExample()
+        {
+            const int DelayWait = 1;
+            write("start...");
+            var t1 = WithoutConfigureAwait();
+            var t2 = WithConfigureAwait();
+            var t3 = Immediate(true);
+            var t4 = Immediate(false);
+            
+            write("wait...");
+            Task.WaitAll(t1, t2, t3, t4);
+            
+            Assert.NotEqual(Thread.CurrentThread.ManagedThreadId, t1.Result);
+            Assert.NotEqual(Thread.CurrentThread.ManagedThreadId, t2.Result);
+            Assert.NotEqual(t1.Result, t2.Result);
+            
+            Assert.Equal(Thread.CurrentThread.ManagedThreadId, t3.Result);
+            Assert.Equal(Thread.CurrentThread.ManagedThreadId, t4.Result);
+            Assert.Equal(t3.Result, t4.Result);
+            write("end...");
+            
+            void print(string message, int delay, bool wait)
+              => write($"{message} delay={delay} await={wait}");
+            
+            void write(string message)
+              => Console.WriteLine($"ConfigureAwait [{Thread.CurrentThread.ManagedThreadId}] {message}");
+            
+            
+            async Task<int> WithoutConfigureAwait()
+            {
+                print("start", DelayWait, false);
+                await Task.Delay(DelayWait).ConfigureAwait(false);
+                print("return", DelayWait, false);
+                return Thread.CurrentThread.ManagedThreadId;
+            }
+            
+            async Task<int> WithConfigureAwait()
+            {
+                print("start", DelayWait, true);
+                await Task.Delay(DelayWait).ConfigureAwait(true);
+                print("return", DelayWait, true);
+                return Thread.CurrentThread.ManagedThreadId;
+            }
+            
+            async Task<int> Immediate(bool wait)
+            {
+                print("start", 0, wait);
+                await Task.Delay(0).ConfigureAwait(wait);
+                print("return", 0, wait);
+                return Thread.CurrentThread.ManagedThreadId;
+            }
+        }
+        /*
+        ConfigureAwait [19] start...
+        ConfigureAwait [19] start delay=1 await=False
+        ConfigureAwait [19] start delay=1 await=True
+        ConfigureAwait [19] start delay=0 await=True
+        ConfigureAwait [19] return delay=0 await=True
+        ConfigureAwait [19] start delay=0 await=False
+        ConfigureAwait [19] return delay=0 await=False
+        ConfigureAwait [10] return delay=1 await=False
+        ConfigureAwait [19] wait...
+        ConfigureAwait [17] return delay=1 await=True
+        ConfigureAwait [19] end...
+        */
     }
 }

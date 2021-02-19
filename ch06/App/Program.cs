@@ -5,9 +5,9 @@ namespace App
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            PrintAndWait(TimeSpan.FromMilliseconds(100));
+            await PrintAndWait(TimeSpan.FromMilliseconds(100));
         }
         
         static async Task PrintAndWait(TimeSpan delay)

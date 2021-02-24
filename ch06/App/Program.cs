@@ -15,6 +15,8 @@ namespace App
         {
             await PrintAndWait(TimeSpan.FromMilliseconds(100));
             await PrintAndWaitWithSimpleLoop(TimeSpan.FromMilliseconds(100));
+            await PrintAndWaitInLoop(TimeSpan.FromMilliseconds(50));
+            await PrintAndWaitInTryFinally(TimeSpan.FromMilliseconds(100));
         }
         
         /*
@@ -220,7 +222,222 @@ namespace App
         		this.SetStateMachine (stateMachine);
         	}
         }
-
+        */
+        
+        /*
+        [AsyncStateMachine (typeof(_003CPrintAndWaitInLoop_003Ed__3))]
+	    private static Task PrintAndWaitInLoop (TimeSpan delay)
+	    {
+	    	_003CPrintAndWaitInLoop_003Ed__3 stateMachine = default(_003CPrintAndWaitInLoop_003Ed__3);
+	    	stateMachine._003C_003Et__builder = AsyncTaskMethodBuilder.Create ();
+	    	stateMachine.delay = delay;
+	    	stateMachine._003C_003E1__state = -1;
+	    	stateMachine._003C_003Et__builder.Start (ref stateMachine);
+	    	return stateMachine._003C_003Et__builder.Task;
+	    }
+        */
+        static async Task PrintAndWaitInLoop(TimeSpan delay)
+        {
+            Console.WriteLine("Before loop");
+            for(int i = 0; i < 3; i++)
+            {
+                Console.WriteLine("In loop before delay");
+                await Task.Delay(delay);
+                Console.WriteLine("In loop after delay");
+            }
+            Console.WriteLine("After loop");
+        }
+        /*
+        [StructLayout (LayoutKind.Auto)]
+        [CompilerGenerated]
+        private struct _003CPrintAndWaitInLoop_003Ed__3 : IAsyncStateMachine
+        {
+        	public int _003C_003E1__state;
+        
+        	public AsyncTaskMethodBuilder _003C_003Et__builder;
+        
+        	public TimeSpan delay;
+        
+        	private int _003Ci_003E5__2;
+        
+        	private TaskAwaiter _003C_003Eu__1;
+        
+        	private void MoveNext ()
+        	{
+        		int num = _003C_003E1__state;
+        		try {
+        			if (num != 0) {
+        				Console.WriteLine ("Before loop");
+        				_003Ci_003E5__2 = 0;
+        				goto IL_00a1;
+        			}
+        			TaskAwaiter awaiter = _003C_003Eu__1;
+        			_003C_003Eu__1 = default(TaskAwaiter);
+        			num = (_003C_003E1__state = -1);
+        			goto IL_0080;
+        			IL_0080:
+        			awaiter.GetResult ();
+        			Console.WriteLine ("In loop after delay");
+        			_003Ci_003E5__2++;
+        			goto IL_00a1;
+        			IL_00a1:
+        			if (_003Ci_003E5__2 < 3) {
+        				Console.WriteLine ("In loop before delay");
+        				awaiter = Task.Delay (delay).GetAwaiter ();
+        				if (!awaiter.IsCompleted) {
+        					num = (_003C_003E1__state = 0);
+        					_003C_003Eu__1 = awaiter;
+        					_003C_003Et__builder.AwaitUnsafeOnCompleted (ref awaiter, ref this);
+        					return;
+        				}
+        				goto IL_0080;
+        			}
+        			Console.WriteLine ("After loop");
+        		} catch (Exception exception) {
+        			_003C_003E1__state = -2;
+        			_003C_003Et__builder.SetException (exception);
+        			return;
+        		}
+        		_003C_003E1__state = -2;
+        		_003C_003Et__builder.SetResult ();
+        	}
+        
+        	void IAsyncStateMachine.MoveNext ()
+        	{
+        		//ILSpy generated this explicit interface implementation from .override directive in MoveNext
+        		this.MoveNext ();
+        	}
+        
+        	[DebuggerHidden]
+        	private void SetStateMachine (IAsyncStateMachine stateMachine)
+        	{
+        		_003C_003Et__builder.SetStateMachine (stateMachine);
+        	}
+        
+        	void IAsyncStateMachine.SetStateMachine (IAsyncStateMachine stateMachine)
+        	{
+        		//ILSpy generated this explicit interface implementation from .override directive in SetStateMachine
+        		this.SetStateMachine (stateMachine);
+        	}
+        }
+        */
+        
+        /*
+        [AsyncStateMachine (typeof(_003CPrintAndWaitInTryFinally_003Ed__4))]
+	    private static Task PrintAndWaitInTryFinally (TimeSpan delay)
+	    {
+	    	_003CPrintAndWaitInTryFinally_003Ed__4 stateMachine = default(_003CPrintAndWaitInTryFinally_003Ed__4);
+	    	stateMachine._003C_003Et__builder = AsyncTaskMethodBuilder.Create ();
+	    	stateMachine.delay = delay;
+	    	stateMachine._003C_003E1__state = -1;
+	    	stateMachine._003C_003Et__builder.Start (ref stateMachine);
+	    	return stateMachine._003C_003Et__builder.Task;
+	    }
+        */
+        static async Task PrintAndWaitInTryFinally(TimeSpan delay)
+        {
+            Console.WriteLine("Before try");
+            await Task.Delay(delay);
+            try
+            {
+                Console.WriteLine("In try before delay");
+                await Task.Delay(delay);
+                Console.WriteLine("In try after delay");
+            }
+            finally
+            {
+                Console.WriteLine("In finally");
+            }
+            Console.WriteLine("After try");
+        }
+        /*
+        [StructLayout (LayoutKind.Auto)]
+        [CompilerGenerated]
+        private struct _003CPrintAndWaitInTryFinally_003Ed__4 : IAsyncStateMachine
+        {
+        	public int _003C_003E1__state;
+        
+        	public AsyncTaskMethodBuilder _003C_003Et__builder;
+        
+        	public TimeSpan delay;
+        
+        	private TaskAwaiter _003C_003Eu__1;
+        
+        	private void MoveNext ()
+        	{
+        		int num = _003C_003E1__state;
+        		try {
+        			TaskAwaiter awaiter;
+        			if (num != 0) {
+        				if (num == 1) {
+        					goto IL_0078;
+        				}
+        				Console.WriteLine ("Before try");
+        				awaiter = Task.Delay (delay).GetAwaiter ();
+        				if (!awaiter.IsCompleted) {
+        					num = (_003C_003E1__state = 0);
+        					_003C_003Eu__1 = awaiter;
+        					_003C_003Et__builder.AwaitUnsafeOnCompleted (ref awaiter, ref this);
+        					return;
+        				}
+        			} else {
+        				awaiter = _003C_003Eu__1;
+        				_003C_003Eu__1 = default(TaskAwaiter);
+        				num = (_003C_003E1__state = -1);
+        			}
+        			awaiter.GetResult ();
+        			goto IL_0078;
+        			IL_0078:
+        			try {
+        				if (num != 1) {
+        					Console.WriteLine ("In try before delay");
+        					awaiter = Task.Delay (delay).GetAwaiter ();
+        					if (!awaiter.IsCompleted) {
+        						num = (_003C_003E1__state = 1);
+        						_003C_003Eu__1 = awaiter;
+        						_003C_003Et__builder.AwaitUnsafeOnCompleted (ref awaiter, ref this);
+        						return;
+        					}
+        				} else {
+        					awaiter = _003C_003Eu__1;
+        					_003C_003Eu__1 = default(TaskAwaiter);
+        					num = (_003C_003E1__state = -1);
+        				}
+        				awaiter.GetResult ();
+        				Console.WriteLine ("In try after delay");
+        			} finally {
+        				if (num < 0) {
+        					Console.WriteLine ("In finally");
+        				}
+        			}
+        			Console.WriteLine ("After try");
+        		} catch (Exception exception) {
+        			_003C_003E1__state = -2;
+        			_003C_003Et__builder.SetException (exception);
+        			return;
+        		}
+        		_003C_003E1__state = -2;
+        		_003C_003Et__builder.SetResult ();
+        	}
+        
+        	void IAsyncStateMachine.MoveNext ()
+        	{
+        		//ILSpy generated this explicit interface implementation from .override directive in MoveNext
+        		this.MoveNext ();
+        	}
+        
+        	[DebuggerHidden]
+        	private void SetStateMachine (IAsyncStateMachine stateMachine)
+        	{
+        		_003C_003Et__builder.SetStateMachine (stateMachine);
+        	}
+        
+        	void IAsyncStateMachine.SetStateMachine (IAsyncStateMachine stateMachine)
+        	{
+        		//ILSpy generated this explicit interface implementation from .override directive in SetStateMachine
+        		this.SetStateMachine (stateMachine);
+        	}
+        }
         */
     }    
 }

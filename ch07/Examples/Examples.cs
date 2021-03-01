@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Xunit;
 
 namespace Examples
@@ -44,6 +45,27 @@ namespace Examples
                 () => { Console.WriteLine($"foreach value={value}"); Assert.True(value < 3); });
             foreach(var assertion in asserts)
               assertion();
+        }
+        
+        [Fact]
+        public void CallerFilePathCallerLineNumberCallerMemberNameCanBeProvidedByTheCompiler()
+        {
+            (string path, string member, int line) Identity(
+                [CallerFilePath] string path = null,
+                [CallerMemberName] string member = null,
+                [CallerLineNumber] int line = -1) => (path, member, line);
+            
+            var (path, member, line) = Identity();
+            Console.WriteLine($"{path} {member} {line}");
+            Assert.NotNull(path);
+            Assert.NotNull(member);
+            Assert.NotEqual(-1, line); // should be 58
+            
+            (path, member, line) = Identity("fake.py", "hack-it", 1984);
+            Console.WriteLine($"{path} {member} {line}");
+            Assert.Equal("fake.py", path);
+            Assert.Equal("hack-it", member);
+            Assert.Equal(1984, line);
         }
     }
 }

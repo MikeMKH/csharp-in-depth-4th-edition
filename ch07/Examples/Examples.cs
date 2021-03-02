@@ -67,5 +67,21 @@ namespace Examples
             Assert.Equal("hack-it", member);
             Assert.Equal(1984, line);
         }
+        
+        [Fact]
+        public void DynamicTypesPreserveCallerInformation()
+        {
+            int CalledByLine(string value, [CallerLineNumber] int line = -1)
+            {
+                Console.WriteLine($"value={value} line={line}");
+                return line;
+            }
+            
+            dynamic value = "hello";
+            var line1 = CalledByLine(value);
+            var line2 = CalledByLine((string) value);
+            Assert.NotEqual(-1, line1);
+            Assert.NotEqual(-1, line2);
+        }
     }
 }

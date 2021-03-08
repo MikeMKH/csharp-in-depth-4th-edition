@@ -36,7 +36,20 @@ namespace Examples
         {
             var date = System.DateTime.Now;
             CultureInfo.GetCultures(CultureTypes.AllCultures)
+              .Take(5)
               .ToList().ForEach(c => Console.WriteLine(string.Format(c, "{0,-15} {1,12:d}", c.Name, date)));
+        }
+        
+        [Fact]
+        public void StringFormatIsSimilarToStringInterpolation()
+        {
+            var x = 10;
+            var y = 20;
+            
+            var s1 = $"x={x} y={y}";
+            var s2 = string.Format("x={0} y={1}", x, y);
+            
+            Assert.Equal(s1, s2);
         }
     }
 }

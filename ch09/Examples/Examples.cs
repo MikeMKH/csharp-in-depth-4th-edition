@@ -37,7 +37,11 @@ namespace Examples
             var date = System.DateTime.Now;
             CultureInfo.GetCultures(CultureTypes.AllCultures)
               .Take(5)
-              .ToList().ForEach(c => Console.WriteLine(string.Format(c, "{0,-15} {1,12:d}", c.Name, date)));
+              .ToList().ForEach(c => 
+                {
+                  FormattableString s = $"{c.Name,-15} {date,12:d}";
+                  Console.WriteLine(s.ToString(c));
+                });
         }
         
         [Fact]

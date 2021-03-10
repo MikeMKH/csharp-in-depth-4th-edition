@@ -79,7 +79,7 @@ namespace Examples
         {
           var value = 42;
           Assert.Equal(42, value);
-          var s = $"{((Func<int>)(() => value++))()}";
+          var _ = $"{((Func<int>)(() => value++))()}";
           Assert.Equal(43, value);
         }
     }

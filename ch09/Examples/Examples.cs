@@ -55,5 +55,32 @@ namespace Examples
             
             Assert.Equal(s1, s2);
         }
+        
+        [Fact]
+        public void InterpolatedStringsAreNotDynamiclyFormatted()
+        {
+            var value = "before";
+            var s1 =  $"value={value}";
+            Assert.Equal("value=before", s1);
+            value = "after";
+            Assert.Equal("value=before", s1);
+            Assert.Equal("after", value);
+            
+            value = "before";
+            FormattableString s2 = $"value={value}";
+            Assert.Equal("value=before", s2.ToString());
+            value = "after";
+            Assert.Equal("value=before", s2.ToString());
+            Assert.Equal("after", value);
+        }
+        
+        [Fact]
+        public void InterpolatedStringsUsesExpressions()
+        {
+          var value = 42;
+          Assert.Equal(42, value);
+          var s = $"{((Func<int>)(() => value++))()}";
+          Assert.Equal(43, value);
+        }
     }
 }

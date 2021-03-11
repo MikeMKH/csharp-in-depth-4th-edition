@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using Xunit;
 
 namespace Examples
@@ -75,12 +76,45 @@ namespace Examples
         }
         
         [Fact]
-        public void InterpolatedStringsUsesExpressions()
+        public void InterpolatedStringUsingExpressionExample()
         {
-          var value = 42;
-          Assert.Equal(42, value);
-          var _ = $"{((Func<int>)(() => value++))()}";
-          Assert.Equal(43, value);
+            var value = 42;
+            Assert.Equal(42, value);
+            var _ = $"{((Func<int>)(() => value++))()}";
+            Assert.Equal(43, value);
+        }
+        
+        [Fact]
+        public void InterpolatedStringFizzBuzzer()
+        {
+            Func<int, string> fizzbuzzer = value => $"{((Func<int, string>)(n => (n % 15 == 0) ? "FizzBuzz" : (n % 3 == 0) ? "Fizz" : (n % 5 == 0) ? "Buzz" : n.ToString()))(value)}";
+            Assert.Equal("Fizz", fizzbuzzer(3));
+            Assert.Equal("Fizz", fizzbuzzer(33));
+            Assert.Equal("Buzz", fizzbuzzer(5));
+            Assert.Equal("Buzz", fizzbuzzer(55));
+            Assert.Equal("FizzBuzz", fizzbuzzer(15));
+            Assert.Equal("FizzBuzz", fizzbuzzer(1515));
+            Assert.Equal("2", fizzbuzzer(2));
+            Assert.Equal("4", fizzbuzzer(4));
+        }
+        
+        [Fact]
+        public void NameofExamples()
+        {
+            var value = "something";
+            Assert.Equal("value", nameof(value));
+            
+            int Foo(int n) => n * 7;
+            Assert.Equal("Foo", nameof(Foo));
+            
+            Assert.Equal("Examples", nameof(Examples));
+            Assert.Equal("WriteLine", nameof(System.Console.WriteLine));
+            
+            Assert.Equal("me", WhoCalled("me"));
+            string CallThem(Func<string> f) => f();
+            Assert.Equal(nameof(NameofExamples), CallThem(() => WhoCalled()));
+            
+            string WhoCalled([CallerMemberName] string caller = null) => caller;
         }
     }
 }

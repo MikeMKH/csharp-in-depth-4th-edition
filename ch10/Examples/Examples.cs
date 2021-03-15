@@ -1,8 +1,10 @@
 using System;
 using static System.String;
 using static System.Linq.Queryable;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using Xunit;
 
 namespace Examples
@@ -43,6 +45,54 @@ namespace Examples
             Assert.Equal("Fizz", fizzbuzzer(9));
             Assert.Equal("FizzBuzz", fizzbuzzer(15));
             Assert.Equal("FizzBuzz", fizzbuzzer(45));
+        }
+        
+        [Fact]
+        public void IndexersCanBeUsedInObjectInitializers()
+        {
+            var text = "This text is too long or something.";
+            
+            StringBuilder builder1 = new StringBuilder(text)
+            {
+                Length = 20,
+            };
+            builder1[19] = '\u2026';
+            Console.OutputEncoding = Encoding.UTF8;
+            Console.WriteLine($"text={builder1}");
+            
+            StringBuilder builder2 = new StringBuilder(text)
+            {
+                Length =20,
+                [19] = '\u2026',
+            };
+            Console.OutputEncoding = Encoding.UTF8;
+            Console.WriteLine($"text={builder2}");
+            
+            Assert.Equal(builder1.ToString(), builder2.ToString());
+        }
+        
+        [Fact]
+        public void ObjectInitializerThrowsArgumentExceptionForDuplicates()
+        {
+            var exception = Record.Exception(() => new Dictionary<string, int>
+            {
+                {"A", 1},
+                {"B", 2},
+                {"B", 3},
+            });
+            Assert.IsType<ArgumentException>(exception);
+        }
+        
+        [Fact]
+        public void IndexersInitializerDoesNotThrowsArgumentExceptionForDuplicates()
+        {
+            var exception = Record.Exception(() => new Dictionary<string, int>
+            {
+                ["A"] = 1,
+                ["B"] = 2,
+                ["B"] = 3,
+            });
+            Assert.Null(exception);
         }
     }
 }

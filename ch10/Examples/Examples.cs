@@ -94,5 +94,37 @@ namespace Examples
             });
             Assert.Null(exception);
         }
+        
+        [Fact]
+        public void NullableBooleanComparisonExamples()
+        {
+            string value;
+            const string excepted = "nope";
+            
+            value = null;
+            Assert.Equal(value?.Equals(excepted) ?? false, value?.Equals(excepted) == true);
+            Assert.Equal(value?.Equals(excepted) ?? true, value?.Equals(excepted) != false);
+            
+            value = excepted;
+            Assert.Equal(value?.Equals(excepted) ?? false, value?.Equals(excepted) == true);
+            Assert.Equal(value?.Equals(excepted) ?? true, value?.Equals(excepted) != false);
+        }
+        
+        [Fact]
+        public void IndexersAndNullConditionalOperatorExamples()
+        {
+            int[] values = null;
+            Assert.Null(values?[0]);
+            
+            values = new int[] {1, 2, 3};
+            Assert.Throws<IndexOutOfRangeException>(() => values?[4]);
+        }
+        
+        [Fact]
+        public void FuncAndNullConditionalOperatorExample()
+        {
+            Func<int, int> f = null;
+            Assert.Null(f?.Invoke(8));
+        }
     }
 }

@@ -126,5 +126,83 @@ namespace Examples
             Func<int, int> f = null;
             Assert.Null(f?.Invoke(8));
         }
+        
+        static bool PrintMessageAndReturnValue(string message, bool result)
+        {
+            Console.WriteLine(message);
+            return result;
+        }
+        
+        static void A()
+        {
+            try 
+            {
+                Console.WriteLine("try: A");
+                throw new Exception("A");
+            }
+            finally
+            {
+                Console.WriteLine("finally: A");
+            }
+        }
+        
+        static void B()
+        {
+            try
+            {
+                Console.WriteLine("try: B");
+                A();
+            }
+            catch(Exception)
+              when(PrintMessageAndReturnValue("when: B", false))
+            {
+                Console.WriteLine("catch: B");
+            }
+            finally
+            {
+                Console.WriteLine("finally: B");
+            }
+        }
+        
+        static void C()
+        {
+            try
+            {
+                Console.WriteLine("try: C");
+                B();
+            }
+            catch(ArgumentException)
+              when(PrintMessageAndReturnValue("when: C <ArgumentException>", true))
+            {
+                Console.WriteLine("no idea how we got here");
+            }
+            catch(Exception)
+              when(PrintMessageAndReturnValue("when: C <Exception>", true))
+            {
+                Console.WriteLine("catch: C");
+            }
+            finally
+            {
+                Console.WriteLine("finally: C");
+            }
+        }
+        
+        [Fact]
+        public void ExceptionFiltersExample()
+        {
+            var expection = Record.Exception(() => C());
+            Assert.Null(expection);
+        }
+        /*
+        try: C
+        try: B
+        try: A
+        when: B
+        when: C <Exception>
+        finally: A
+        finally: B
+        catch: C
+        finally: C
+        */
     }
 }

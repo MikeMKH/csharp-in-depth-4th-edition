@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading;
 using Xunit;
 
 namespace Examples
@@ -204,5 +205,61 @@ namespace Examples
         catch: C
         finally: C
         */
+        
+        [Fact]
+        public void RetryExample()
+        {
+            Func<int> f = () =>
+            {
+                throw new Exception("I've got problems");
+                return 8;
+            };
+            
+            var expection = Record.Exception(() => Retry(f, 3, 1));
+            Assert.IsType<Exception>(expection);
+            
+            expection = Record.Exception(() => Retry(f, 1, 100));
+            Assert.IsType<Exception>(expection);
+            
+            T Retry<T>(Func<T> operation, int attempts = 2, int millisecondsTimeout = 10)
+            {
+                while(true)
+                {
+                    try
+                    {
+                        attempts--;
+                        operation();
+                    }
+                    catch(Exception e) when(attempts >= 0)
+                    {
+                        Console.WriteLine($"Retry: failed={e}");
+                        Console.WriteLine($"Retry: attempts left={attempts}");
+                        Thread.Sleep(millisecondsTimeout);
+                    }
+                }
+            }
+        }
+        
+        [Fact]
+        public void LogExample()
+        {
+            Func<int> f = () => throw new Exception("BOOM!");
+            
+            var expection = Record.Exception(() =>
+            {
+              try
+              {
+                  f();
+              }
+              catch(Exception e) when(Log(e)){}
+            });
+            Assert.IsType<Exception>(expection);
+            
+            bool Log(Exception e)
+            {
+                Console.WriteLine($"{DateTime.UtcNow}: {e.GetType()} {e.Message}");
+                return false;
+            }
+        }
     }
 }

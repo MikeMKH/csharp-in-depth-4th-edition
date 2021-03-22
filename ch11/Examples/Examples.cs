@@ -25,5 +25,38 @@ namespace Examples
                     (m.min < value ? m.min : value,
                     m.max > value ? m.max : value));
         }
+        
+        [Fact]
+        public void TupleExamples()
+        {
+            // tuple literal
+            var t1 = (8, y: "hello");
+            Assert.Equal(8, t1.Item1);
+            Assert.Equal("hello", t1.y);
+            
+            // tuple type
+            (int x, string) t2;
+            t2 = t1;
+            Assert.Equal(t1.Item1, t2.x);
+            Assert.Equal(t1.y, t2.Item2);
+        }
+        
+        [Fact]
+        public void FibonacciExample()
+        {
+            Assert.Equal(
+                new [] {0, 1, 1, 2, 3, 5, 8, 13, 21, 34},
+                Fibonacci().Take(10));
+            
+            IEnumerable<int> Fibonacci()
+            {
+                var state = (current: 0, next: 1);
+                while(true)
+                {
+                    yield return state.current;
+                    state = (state.next, state.current + state.next);
+                }
+            }
+        }
     }
 }

@@ -97,5 +97,35 @@ namespace Examples
             (object, object) z4 = z;
             // (string, string) z5 = ((string, string)) z; // error CS0030: Cannot convert type '(int x, string)' to '(string, string)'
         }
+        
+        interface ITupleExample
+        {
+            void Method((int x, string) tuple);
+        }
+        
+        class TupleExample : ITupleExample
+        {
+            public void Method((int x, string) arg)
+              => Console.WriteLine($"x={arg.x} Item2={arg.Item2}");
+        }
+        
+        [Fact]
+        public void TupleEqualityExamples()
+        {
+            var t1 = (x: "x", y: 'y', z: 3);
+            var t2 = ("x", 'y', 3);
+            var t3 = ("no a match", 'x', 9);
+            var t4 = ("will not compile");
+            
+            Assert.True(t1 == t2);
+            Assert.False(t1 != t2);
+            Assert.Equal(t1, t2);
+            
+            Assert.False(t1 == t3);
+            Assert.True(t1 != t3);
+            Assert.NotEqual(t1, t3);
+            
+            // Assert.True(t1 != t4); // error CS0019: Operator '!=' cannot be applied to operands of type '(string x, char y, int z)' and 'string'
+        }
     }
 }

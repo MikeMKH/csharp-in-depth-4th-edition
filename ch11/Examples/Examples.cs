@@ -127,5 +127,45 @@ namespace Examples
             
             // Assert.True(t1 != t4); // error CS0019: Operator '!=' cannot be applied to operands of type '(string x, char y, int z)' and 'string'
         }
+        
+        [Fact]
+        public void TupleCompilerExample()
+        {
+            var t1 = new ValueTuple<int, string> (8, "hello");
+            Assert.Equal(8, t1.Item1);
+            Assert.Equal("hello", t1.Item2);
+            
+            var t2 = new ValueTuple<int, string>(t1.Item1, t1.Item2);
+            t2.Item1 = 42;
+            t2.Item2 = "everything";
+            Assert.Equal(8, t1.Item1);
+            Assert.Equal("hello", t1.Item2);
+            Assert.Equal(42, t2.Item1);
+            Assert.Equal("everything", t2.Item2);
+            
+            var t3 = new ValueTuple<byte, string>((byte) t1.Item1, t1.Item2);
+            Assert.Equal(8, t3.Item1);
+            Assert.Equal("hello", t3.Item2);
+        }
+        
+        [Fact]
+        public void TupleToStringExample()
+        {
+            var t = (x: (int?) null, y: 2, z: "three");
+            Assert.Null(t.x);
+            Assert.Equal("(, 2, three)", t.ToString());
+        }
+        
+        [Fact]
+        public void TupleOfSize8AndLargerExample()
+        {
+            var t8 = (1, 2, 3, 4, 5, 6, 7, 8);
+            Assert.IsType<ValueTuple<int, int, int, int, int, int, int, ValueTuple<int>>>(t8);
+            Assert.Equal(8, t8.Item8);
+
+            var t10 = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+            Assert.IsType<ValueTuple<int, int, int, int, int, int, int, ValueTuple<int, int, int>>>(t10);
+            Assert.Equal(10, t10.Item10);
+        }
     }
 }

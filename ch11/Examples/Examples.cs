@@ -167,5 +167,20 @@ namespace Examples
             Assert.IsType<ValueTuple<int, int, int, int, int, int, int, ValueTuple<int, int, int>>>(t10);
             Assert.Equal(10, t10.Item10);
         }
+        
+        [Fact]
+        public void TupleWithLinqExample()
+        {
+            var values = (new [] { 1, 2, 3, 4, 5, 6, 7, 8 }).Select((x, idx) => new { Index = idx, Value = x });
+            var q = from xs in values where xs.Value % 2 == 0 select xs;
+            
+            var ts = (from xs in q select (xs.Value, Value2: xs.Value * 2)).ToArray();
+            Assert.Equal(2, ts[0].Value);
+            
+            var vs = (from xs in q select new { xs.Value, Value2 = xs.Value * 2 }).ToArray();
+            Assert.Equal(2, vs[0].Value);
+            
+            Assert.Equal(ts[1].Value2, vs[1].Value2);
+        }
     }
 }

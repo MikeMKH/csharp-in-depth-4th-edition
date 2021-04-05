@@ -182,5 +182,42 @@ namespace Examples
             
             Assert.Equal(ts[1].Value2, vs[1].Value2);
         }
+        
+        [Fact]
+        public void DynamicBinderDoesNotKnowAboutElementNames()
+        {
+            dynamic t = (x: 1, y: "two");
+            var ex = Record.Exception(() => Console.WriteLine($"hello {t.y}"));
+            Assert.IsType<Microsoft.CSharp.RuntimeBinder.RuntimeBinderException>(ex);
+        }
+        
+        [Fact]
+        public void DynamicBinderStillDoesNotKnowAboutElementNames()
+        {
+            var t = (x: 1, y: "two");
+            var ex1 = Record.Exception(() => Console.WriteLine($"hello {t.y}"));
+            Assert.Null(ex1);
+            Assert.IsType<(int, string)>(t);
+            Assert.Equal(1, t.x);
+            Assert.Equal("two", t.y);
+            
+            dynamic d = t;
+            var ex2 = Record.Exception(() => Console.WriteLine($"hello {d.y}"));
+            Assert.IsType<Microsoft.CSharp.RuntimeBinder.RuntimeBinderException>(ex2);
+            Assert.Equal(t.x, d.Item1);
+            Assert.Equal(t.y, d.Item2);
+        }
+        
+        [Fact]
+        public void DynamicBinderDoesNotGoBeyondItem7()
+        {
+            var t = (1, 2, 3, 4, 5, 6, 7, 8);
+            Assert.Equal(8, t.Item8);
+            
+            dynamic d = t;
+            var ex = Record.Exception(() => Console.WriteLine($"8th={d.Item8}"));
+            Assert.IsType<Microsoft.CSharp.RuntimeBinder.RuntimeBinderException>(ex);
+            Assert.Equal(t.Item8, t.Rest.Item1);
+        }
     }
 }

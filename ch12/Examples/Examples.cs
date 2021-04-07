@@ -87,5 +87,35 @@ namespace Examples
             Assert.Equal(5, a);
             Assert.Equal(42, b);
         }
+        
+        [Fact]
+        public void ExtensionMethodDeconstructExample()
+        {
+            var (y1, m1, d1) = DateTime.Parse("2020-03-17"); // first day of working from home due to the pandemic
+            Assert.Equal(2020, y1);
+            Assert.Equal(3, m1);
+            Assert.Equal(17, d1);
+            
+            (int y2, _, int d2) = DateTime.Parse("2005-10-07"); // wedding
+            Assert.Equal(2005, y2);
+            Assert.Equal(7, d2);
+            
+            var (_, _, _, h3, m3, s3) = DateTime.Parse("2020-04-28T12:02:20"); // jack ;(
+            Assert.Equal(12, h3);
+            Assert.Equal(2, m3);
+            Assert.Equal(20, s3);
+        }
+    }
+    
+    public static class ExamplesExt
+    {
+        public static void Deconstruct(this DateTime value, out int year, out int month, out int day)
+          => (year, month, day) = (value.Year, value.Month, value.Day);
+        
+        public static void Deconstruct(this DateTime value,
+          out int year, out int month, out int day,
+          out int hour, out int minute, out int second)
+          => (year, month, day, hour, minute, second)
+            = (value.Year, value.Month, value.Day, value.Hour, value.Minute, value.Second);
     }
 }

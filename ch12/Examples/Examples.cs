@@ -136,7 +136,7 @@ namespace Examples
             Assert.True(IsType<string?>("five"));
             
             bool IsType<T>(object value)
-              => value is T ? true : false;
+              => value is T;
         }
         
         [Fact]

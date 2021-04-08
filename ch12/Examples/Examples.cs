@@ -105,6 +105,63 @@ namespace Examples
             Assert.Equal(2, m3);
             Assert.Equal(20, s3);
         }
+        
+        [Fact]
+        public void ConstantPatternExamples()
+        {
+            Assert.Equal(1, Match("hello"));
+            Assert.Equal(-1, Match("good bye"));
+            Assert.Equal(10, Match(5L));
+            Assert.Equal(-1, Match(7));
+            Assert.Equal(100, Match(10));
+            Assert.Equal(-1, Match(10L));
+            
+            int Match(object input)
+            {
+                if (input is "hello") return 1;
+                if (input is 5L) return 10;
+                if (input is 10) return 100;
+                return -1;
+            }
+        }
+        
+        [Fact]
+        public void TypePatternExamples()
+        {
+            Assert.False(IsType<int?>(null));
+            Assert.True(IsType<int?>(5));
+            Assert.False(IsType<int?>("five"));
+            Assert.False(IsType<string?>(null));
+            Assert.False(IsType<string?>(5));
+            Assert.True(IsType<string?>("five"));
+            
+            bool IsType<T>(object value)
+              => value is T ? true : false;
+        }
+        
+        [Fact]
+        public void VarPatternExample()
+        {
+            Assert.Contains("int", Match(8));
+            Assert.Contains("long", Match(42L));
+            Assert.Contains("string", Match("eight"));
+            Assert.Contains("DateTime", Match(DateTime.UtcNow));
+            
+            string Match(object input)
+            {
+                switch (input)
+                {
+                    case int i:
+                      return $"int value {i}";
+                    case long l:
+                      return $"long value {l}";
+                    case string s:
+                      return $"string value {s}";
+                    case var value:
+                      return $"type of {value.GetType()}";
+                }
+            }
+        }
     }
     
     public static class ExamplesExt

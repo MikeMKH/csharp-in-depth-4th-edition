@@ -162,6 +162,45 @@ namespace Examples
                 }
             }
         }
+        
+        [Fact]
+        public void IsOperatorExamples()
+        {
+            Assert.Equal("string=bar", Foo("bar"));
+            Assert.Equal("builder=meh", Foo(new StringBuilder("meh")));
+            Assert.Equal("unknown", Foo(8));
+            
+            var x1 = 8;
+            if (x1 is int x1_ && x1_ > 0)
+            {
+                Assert.Equal(8, x1_);
+            }
+            Assert.Equal(8, x1_);
+            
+            var x2 = (long) x1;
+            if (x2 is long x2_ && x2_ > 0)
+            {
+                Assert.Equal(8, x2_);
+            }
+            Assert.Equal(8, x2_);
+            
+            string Foo(object input)
+            {
+                if (input is string text)
+                {
+                    text = $"string={text}";
+                }
+                else if (input is StringBuilder builder)
+                {
+                    text = $"builder={builder.ToString()}";
+                }
+                else
+                {
+                    text = "unknown";
+                }
+                return text;
+            }
+        }
     }
     
     public static class ExamplesExt

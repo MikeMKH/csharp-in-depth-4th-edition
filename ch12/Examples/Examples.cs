@@ -201,6 +201,59 @@ namespace Examples
                 return text;
             }
         }
+        
+        [Fact]
+        public void FibonacciSwitchPatternMatchExample()
+        {
+            Assert.Equal(0, Fibonacci(0));
+            Assert.Equal(1, Fibonacci(1));
+            Assert.Equal(1, Fibonacci(2));
+            Assert.Equal(2, Fibonacci(3));
+            Assert.Equal(3, Fibonacci(4));
+            Assert.Equal(5, Fibonacci(5));
+            Assert.Equal(8, Fibonacci(6));
+            Assert.Equal(6765, Fibonacci(20));
+            Assert.Equal(121393, Fibonacci(26));
+            
+            var ex = Record.Exception(() => Fibonacci(-1));
+            Assert.IsType<ArgumentOutOfRangeException>(ex);
+            
+            int Fibonacci(int n, int a = 0, int b = 1)
+            {
+                switch (n)
+                {
+                    case 0: return a;
+                    case 1: return b;
+                    case var _ when n > 0: return Fibonacci(n-1, b, a + b);
+                    default: throw new ArgumentOutOfRangeException("n must be non-negative value");
+                }
+            }
+        }
+        
+        [Fact]
+        public void SwitchGuardExample()
+        {
+            Assert.True(Check(126));
+            Assert.True(Check(8L));
+            Assert.False(Check(256));
+            Assert.False(Check(1024L));
+            Assert.False(Check(-1));
+            Assert.False(Check(-42L));
+            
+            bool Check(object n)
+            {
+                switch (n)
+                {
+                    case int x when x > 255:
+                    case long y when y > 255L:
+                      return false;
+                    case int x when x < 0:
+                    case long y when y < 0L:
+                      return false;
+                    default: return true;
+                }
+            }
+        }
     }
     
     public static class ExamplesExt

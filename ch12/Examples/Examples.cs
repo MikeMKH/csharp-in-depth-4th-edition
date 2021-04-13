@@ -254,6 +254,54 @@ namespace Examples
                 }
             }
         }
+        
+        [Fact]
+        public void FizzBuzzExample()
+        {
+            Assert.Equal("Fizz", FizzBuzz(3));
+            Assert.Equal("Fizz", FizzBuzz(33));
+            Assert.Equal("Buzz", FizzBuzz(5));
+            Assert.Equal("Buzz", FizzBuzz(55));
+            Assert.Equal("FizzBuzz", FizzBuzz(15));
+            Assert.Equal("FizzBuzz", FizzBuzz(1515));
+            Assert.Equal("2", FizzBuzz(2));
+            Assert.Equal("22", FizzBuzz(22));
+            
+            string FizzBuzz(int n)
+            {
+                switch ((fizz: n % 3 == 0, buzz: n % 5 == 0))
+                {
+                    case (true, true): return "FizzBuzz";
+                    case (true, false): return "Fizz";
+                    case (false, true): return "Buzz";
+                    default: return n.ToString();
+                }
+            }
+        }
+        
+        [Fact]
+        public void FizzBuzzGuardExample()
+        {
+            Assert.Equal("Fizz", FizzBuzz(3));
+            Assert.Equal("Fizz", FizzBuzz(33));
+            Assert.Equal("Buzz", FizzBuzz(5));
+            Assert.Equal("Buzz", FizzBuzz(55));
+            Assert.Equal("FizzBuzz", FizzBuzz(15));
+            Assert.Equal("FizzBuzz", FizzBuzz(1515));
+            Assert.Equal("2", FizzBuzz(2));
+            Assert.Equal("22", FizzBuzz(22));
+            
+            string FizzBuzz(int n)
+            {
+                switch (n)
+                {
+                    case var _ when n % 3 == 0 && n % 5 == 0: return "FizzBuzz";
+                    case var _ when n % 3 == 0 && n % 5 != 0: return "Fizz";
+                    case var _ when n % 3 != 0 && n % 5 == 0: return "Buzz";
+                    default: return n.ToString();
+                }
+            }
+        }
     }
     
     public static class ExamplesExt

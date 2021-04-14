@@ -22,5 +22,53 @@ namespace Examples
                 p2 *= 2;
             }
         }
+        
+        [Fact]
+        public void SimpleLocalRefExamples()
+        {
+            int x = 42;
+            ref int y = ref x;
+            x++;
+            y++;
+            Assert.Equal(44, x);
+            
+            var array = new (int x, int y)[3];
+            for (int i = 0; i < 3; i++) array[i] = (i, i);
+            for (int i = 0; i < 3; i++)
+            {
+                ref var element = ref array[i];
+                element.x++;
+                element.y *= 2;
+            }
+            Assert.Equal((3, 4), array[2]);
+        }
+        
+        public int value;
+        
+        [Fact]
+        public void LocalRefFieldExample()
+        {
+            var obj = new Examples();
+            ref int x = ref obj.value;
+            x = 10;
+            Assert.Equal(10, obj.value);
+            
+            obj = new Examples();
+            Assert.Equal(10, x);
+            Assert.Equal(default(int), obj.value);
+        }
+        
+        [Fact]
+        public void LocalRefReassignExample()
+        {
+            int x = 10;
+            int y = 20;
+            ref int r = ref x;
+            r++;
+            r = ref y;
+            r++;
+            Assert.Equal(11, x);
+            Assert.Equal(21, y);
+        }
     }
 }

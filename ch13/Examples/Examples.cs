@@ -70,5 +70,26 @@ namespace Examples
             Assert.Equal(11, x);
             Assert.Equal(21, y);
         }
+        
+        [Fact]
+        public void RefReturnExample()
+        {
+            int x = 10;
+            ref int y = ref Identity(ref x);
+            Assert.Equal(10, x);
+            y++;
+            Assert.Equal(11, x);
+            
+            (Identity(ref y))++;
+            Assert.Equal(12, x);
+
+            string s = "hi";
+            ref string id = ref Identity(ref s);
+            Assert.Equal("hi", s);
+            id = id.ToUpper();
+            Assert.Equal("HI", s);
+            
+            ref T Identity<T>(ref T p) => ref p;
+        }
     }
 }

@@ -95,7 +95,7 @@ namespace Examples
         }
         
         [Fact]
-        public void TernaryOperatorRefExample()
+        public void RefTernaryOperatorExample()
         {
             var values = Enumerable.Range(1, 100);
             var (even, odd) = CountEvenAndOdd(values);
@@ -113,6 +113,17 @@ namespace Examples
                 }
                 return result;
             }
+        }
+        
+        private readonly int field = 42;
+        ref readonly int GetFieldAlias() => ref field;
+        
+        [Fact]
+        public void RefReadonlyExample()
+        {
+            ref readonly int x = ref GetFieldAlias();
+            Assert.Equal(42, x);
+            // (GetFieldAlias())++; // error CS8331: Cannot assign to method 'Examples.GetFieldAlias()' because it is a readonly variable
         }
     }
 }

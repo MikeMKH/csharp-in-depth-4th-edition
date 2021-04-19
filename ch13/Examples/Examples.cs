@@ -177,5 +177,40 @@ namespace Examples
                 Assert.Equal(VALUE, p); // strange
             }
         }
+        
+        struct ReadWriteYearMonthDay
+        {
+            public int Year { get; init; }
+            public int Month { get; init; }
+            public int Day { get; init; }
+            
+            public ReadWriteYearMonthDay(int year, int month, int day)
+              => (Year, Month, Day) = (year, month, day);
+        }
+        
+        readonly struct ReadOnlyYearMonthDay
+        {
+            public int Year { get; init; }
+            public int Month { get; init; }
+            public int Day { get; init; }
+            
+            public ReadOnlyYearMonthDay(int year, int month, int day)
+              => (Year, Month, Day) = (year, month, day);
+        }
+        
+        [Fact]
+        public void ReadOnlyStructExample()
+        {
+            var r  = new ReadOnlyYearMonthDay(1984, 01, 15);
+            var rw = new ReadWriteYearMonthDay(1984, 01, 15);
+            
+            Assert.Equal(ReadWriteFormat(rw), ReadOnlyFormat(r));
+            
+            string ReadWriteFormat(in ReadWriteYearMonthDay value)
+              => $"{value.Year}-{value.Month}-{value.Day}";
+              
+            string ReadOnlyFormat(in ReadOnlyYearMonthDay value)
+              => $"{value.Year}-{value.Month}-{value.Day}";
+        }
     }
 }

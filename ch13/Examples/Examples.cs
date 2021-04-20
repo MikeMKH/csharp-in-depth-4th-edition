@@ -212,5 +212,44 @@ namespace Examples
             string ReadOnlyFormat(in ReadOnlyYearMonthDay value)
               => $"{value.Year}-{value.Month}-{value.Day}";
         }
+        
+        [Theory]
+        [InlineData(1.0, 1.0)]
+        [InlineData(0.1, 0.1)]
+        [InlineData(-1.0, 1.0)]
+        [InlineData(1.0, -1.0)]
+        [InlineData(98.76, 12.34)]
+        public void CanFindMagnitudeOfGivenPoint(double x, double y)
+        {
+            var p = new Point(x, y);
+            var expected = Math.Sqrt(x * x + y * y);
+            var actual = p.Magnitude();
+            Assert.Equal(expected, actual);
+        }
+        
+        [Fact]
+        public void OffsetByChangesPoint()
+        {
+            var p = new Point(1.0, -1.0);
+            Assert.Equal(new Point(1.0, -1.0), p);
+            
+            p.OffsetBy(new Point(-1.0, 1.0));
+            Assert.Equal(new Point(0, 0), p);
+        }
     }
+    
+        public readonly struct Point
+        {
+            public double X { get; init; }
+            public double Y { get; init; }
+            public Point(double x, double y) => (X, Y) = (x, y);
+        }
+        
+        public static class PointExt
+        {
+            public static double Magnitude(this in Point p)
+              => Math.Sqrt(p.X * p.X + p.Y * p.Y);
+            public static void OffsetBy(this ref Point original, in Point offset)
+              => original = new Point(original.X + offset.X, original.Y + offset.Y);
+        }
 }

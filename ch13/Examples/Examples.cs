@@ -236,6 +236,45 @@ namespace Examples
             p.OffsetBy(new Point(-1.0, 1.0));
             Assert.Equal(new Point(0, 0), p);
         }
+        
+        [Fact]
+        public void SpanExample()
+        {
+            string alphabet = "abcdefghijklmnopqrstuvwxyz";
+            Random random = new Random();
+            var s = Generate(alphabet, random, 10);
+            Assert.Equal(10, s.Length);
+            
+            string Generate(string alphabet, Random random, int length)
+            {
+                Span<char> chars = stackalloc char[length];
+                for (int i = 0; i < length; i++)
+                {
+                    chars[i] = alphabet[random.Next(alphabet.Length)];
+                }
+                return new string(chars);
+            }
+        }
+        
+        [Fact]
+        public void StringCreateExample()
+        {
+            string alphabet = "abcdefghijklmnopqrstuvwxyz";
+            Random random = new Random();
+            var s = Generate(alphabet, random, 10);
+            Assert.Equal(10, s.Length);
+            
+            string Generate(string alphabet, Random random, int length)
+              => string.Create(length, (alphabet, random), (span, state) =>
+              {
+                 var a = state.alphabet;
+                 var r = state.random;
+                 for (int i = 0; i < span.Length; i++)
+                 {
+                     span[i] = a[r.Next(a.Length)];
+                 }
+              });
+        }
     }
     
         public readonly struct Point

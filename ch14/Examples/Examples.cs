@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Examples
@@ -56,5 +58,54 @@ namespace Examples
             decimal oneMillionDollars = 1_000_000.00m;
             Assert.Equal(1_000.00m * 1_000.00m, oneMillionDollars);
         }
+        
+        [Fact]
+        public async void DefaultArgumentExample()
+        {
+            var expected = "hello";
+            var actual = await FetchValueAsync(expected);
+            
+            Assert.Equal(expected, actual);
+            
+            async Task<string> FetchValueAsync(string value, CancellationToken cancellationToken = default)
+              => value;
+        }
+        
+        [Fact]
+        public void DefaultLiteralExamples()
+        {
+            var a1 = new [] {default, 1};
+            var a2 = new [] {default, "hello"};
+            Assert.Equal(default(int), a1[0]);
+            Assert.Equal(default, a1[0]);
+            Assert.Equal(default(string), a2[0]);
+            Assert.Equal(default, a2[0]);
+            
+            var p1 = DefaultTo10();
+            var p2 = DefaultTo10(7);
+            var p3 = DefaultTo10(default);
+            Assert.Equal(10, p1);
+            Assert.Equal(7, p2);
+            Assert.Equal(0, p3);
+            Assert.Equal(default, p3);
+            
+            int DefaultTo10(int n = 10) => n;
+        }
+        
+        [Fact]
+        public void NamedArgumentExamples()
+        {
+            var t1 = TupleIdentity(1, z: 2, y: 3);
+            Assert.Equal((1, 3, 2), t1);
+        
+            var t2 = TupleIdentity(1, y: 2, 3);
+            Assert.Equal((1, 2, 3), t2);
+        
+            var t3 = TupleIdentity(1, 2, 3);
+            Assert.Equal((1, 2, 3), t3);
+            
+            (int a, int b, int c) TupleIdentity(int x, int y, int z) => (x, y, z);
+        }
+        
     }
 }

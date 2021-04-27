@@ -107,5 +107,27 @@ namespace Examples
             (int a, int b, int c) TupleIdentity(int x, int y, int z) => (x, y, z);
         }
         
+        enum ExampleEnum {}
+        
+        [Fact]
+        public void GenericTypeConstraintsExamples()
+        {
+            Assert.Equal("Enum", EnumMethod<ExampleEnum>());
+            // Assert.Equal("Enum", EnumMethod<Enum>()); // error CS0453: The type 'Enum' must be a non-nullable value type in order to use it as parameter 'T' in the generic type or method 'EnumMethod<T>()'
+            
+            Assert.Equal("Delegate", DelegateMethod<Action>());
+            Assert.Equal("Delegate", DelegateMethod<Delegate>());
+            Assert.Equal("Delegate", DelegateMethod<MulticastDelegate>());
+            
+            Assert.Equal("Unmanaged", UnmanagedMethod<int>());
+            Assert.Equal("Unmanaged", UnmanagedMethod<System.Int32>());
+            Assert.Equal("Unmanaged", UnmanagedMethod<double>());
+            Assert.Equal("Unmanaged", UnmanagedMethod<char>());
+            // Assert.Equal("Unmanaged", UnmanagedMethod<String>()); // error CS8377: The type 'string' must be a non-nullable value type, along with all fields at any level of nesting, in order to use it as parameter 'T' in the generic type or method 'UnmanagedMethod<T>()'
+            
+            string EnumMethod<T>() where T : struct, Enum => "Enum";
+            string DelegateMethod<T>() where T : Delegate => "Delegate";
+            string UnmanagedMethod<T>() where T : unmanaged => "Unmanaged";
+        }
     }
 }

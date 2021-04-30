@@ -91,5 +91,63 @@ namespace Examples
                   _ => n.ToString()  
               };
         }
+        
+        [Fact]
+        public void PatternMatchingExamples()
+        {
+            var hello = "hello";
+            Func<string> helloFunc = () => "hello";
+            var five = 5;
+            
+            // type patterns
+            Assert.True(hello is string);
+            Assert.True(helloFunc is Func<string>);
+            Assert.True(five is int);
+            
+            // constant patterns
+            Assert.True(hello is "hello");
+            Assert.True(helloFunc() is "hello");
+            Assert.True(five is 5);
+            
+            // var patterns
+            Assert.True(hello is var s);
+            Assert.Equal(hello, s);
+            Assert.True(helloFunc() is var h);
+            Assert.Equal(helloFunc(), h);
+            Assert.True(five is var x);
+            Assert.Equal(five, x);
+        }
+        
+        public record Name(string First, string Last);
+        public record Customer(Name Name, int Number);
+        
+        [Fact]
+        public void PropertyPatternMatchingExamples()
+        {
+            var x = new Customer(Name: new Name("Mike", "Harris"), Number: 5);
+            var y = new Customer(Name: new Name("Kelsey", "Harris"), Number: 4);
+            var z = new Customer(Name: new Name("Jack", "Harris"), Number: 3);
+            
+            Assert.Equal("Harris", SirName(y));
+            Assert.Equal("Harris", SirName(z));
+            
+            Assert.Equal("MikeMikeMikeMikeMike", RepeatFirstName(x));
+            Assert.Equal("JackJackJack", RepeatFirstName(z));
+            
+            string SirName(Customer customer)
+              => customer switch
+              {
+                  Customer { Name: { Last: var sirName } } => sirName,
+                  _ => "unknown"
+              };
+            
+            string RepeatFirstName(Customer customer)
+              => customer switch
+              {
+                  Customer { Name: { First: var first }, Number: var times }
+                    => string.Concat(System.Linq.Enumerable.Repeat(first, times)),
+                  _ => ""
+              };
+        }
     }
 }

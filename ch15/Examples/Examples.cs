@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Examples
@@ -148,6 +151,42 @@ namespace Examples
                     => string.Concat(System.Linq.Enumerable.Repeat(first, times)),
                   _ => ""
               };
+        }
+        
+        public bool WasDisposeCalled = false;
+        
+        public class AsynchronousDisposalClassExample
+        {
+            Examples caller;
+            public AsynchronousDisposalClassExample(Examples examples) { caller = examples; }
+            public async Task DisposeAsync() { caller.WasDisposeCalled = true; }
+            public async Task<int> FiveAsync() => 5;
+        }
+        
+        [Fact]
+        public async void AsynchronousDisposalExample()
+        {
+            Assert.False(this.WasDisposeCalled);
+            await using (var example = new AsynchronousDisposalClassExample(this))
+            {
+                  var five = await example.FiveAsync();
+                  Assert.Equal(5, five);
+            };
+            Assert.True(this.WasDisposeCalled);   
+        }
+        
+        [Fact]
+        public async void AsynchronousStreamExample()
+        {
+            int sum = 0;
+            await foreach (var value in Generate8())
+            {
+                Assert.Equal(8, value);
+                sum += value;
+            }
+            Assert.Equal(8, sum);
+            
+            async IAsyncEnumerable<int> Generate8() { yield return 8; }
         }
     }
 }

@@ -188,5 +188,44 @@ namespace Examples
             
             async IAsyncEnumerable<int> Generate8() { yield return 8; }
         }
+        
+        public interface IAdder
+        {
+            int Add(int a, int b) => a + b;
+        }
+        
+        public class TypicalAdder : IAdder {}
+        
+        public class Plus1Adder : IAdder
+        {
+            public int Add (int a, int b) => 1 + a + b; // must be declared public, otherwise hidden
+        }
+        
+        [Fact]
+        public void DefaultInterfaceMethodExample()
+        {
+            IAdder x = new TypicalAdder();
+            IAdder y = new Plus1Adder();
+            
+            Assert.Equal(4, x.Add(3, 1));
+            Assert.Equal(5, y.Add(3, 1));
+        }
+        
+        public record Person(string FirstName, string LastName);
+        
+        [Fact]
+        public void RecordExample()
+        {
+            var mike = new Person("Mike", "Harris");
+            Person kelsey = mike with { FirstName = "Kelsey" };
+            Person bob = new("Bob", "Smith");
+            
+            // mike.FirstName = "John"; //  error CS8852: Init-only property or indexer 'Examples.Person.FirstName' can only be assigned in an object initializer, or on 'this' or 'base' in an instance constructor or an 'init' accessor
+            
+            Assert.Equal(mike.LastName, kelsey.LastName);
+            Assert.Equal("Mike", mike.FirstName);
+            Assert.Equal(new ("Mike", "Harris"), mike);
+            Assert.Equal(new Person ("Bob", "Smith"), bob);
+        }
     }
 }
